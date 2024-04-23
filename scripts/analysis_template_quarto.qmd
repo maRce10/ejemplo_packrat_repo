@@ -133,9 +133,8 @@ library(ggplot2)
 data(iris)
 
 # Fit a GLMM regression using the lme4 package
-glmm_model <- glmer(Sepal.Length ~ Sepal.Width + Petal.Length + (1 | Species),
-                    data = iris,
-                    family = gaussian)
+glmm_model <- lmer(Sepal.Length ~ Sepal.Width + Petal.Length + (1 | Species),
+                    data = iris)
 
 # Extract fixed effects from the model
 fixed_effects <- fixef(glmm_model)
