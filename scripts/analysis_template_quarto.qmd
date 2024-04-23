@@ -1,0 +1,188 @@
+---
+title: A very cool analysis
+subtitle: A very fancy project
+author: <a href="http://researcher.website.com/">Researcher name</a>
+date: "`r Sys.Date()`"
+toc: true
+toc-depth: 2
+toc-location: left
+number-sections: true
+highlight-style: pygments
+format:
+  html:
+    df-print: kable
+    code-fold: show
+    code-tools: true
+    css: qmd.css
+---
+
+<!-- this code add line numbers to code blocks -->
+
+<!-- only works when code folding is not used in yaml (code_folding: show) -->
+
+```{=html}
+<style>
+body
+  { counter-reset: source-line 0; }
+pre.numberSource code
+  { counter-reset: none; }
+</style>
+```
+```{r set root directory, echo = FALSE}
+
+# set working directory 
+knitr::opts_knit$set(root.dir =  "..")
+
+```
+
+```{r add link to github repo, echo = FALSE, results='asis'}
+
+# print link to github repo if any
+if (file.exists("./.git/config")){
+  config <- readLines("./.git/config")
+  url <- grep("url",  config, value = TRUE)
+  url <- gsub("\\turl = |.git$", "", url)
+  cat("\nSource code and data found at [", url, "](", url, ")", sep = "")
+  }
+
+```
+
+```{r setup style, echo = FALSE, message = FALSE, warning=FALSE}
+
+# options to customize chunk outputs
+knitr::opts_chunk$set(
+  class.source = "numberLines lineAnchors", # for code line numbers
+  tidy.opts = list(width.cutoff = 65), 
+  tidy = TRUE,
+  message = FALSE
+ )
+
+```
+
+<!-- skyblue box -->
+
+::: {.alert .alert-info}
+# Purpose {.unnumbered .unlisted}
+
+-   The first goal of this report
+
+-   The second goal of this report
+:::
+
+ 
+
+<!-- light brown box -->
+
+::: {.alert .alert-warning}
+# Report overview {.unnumbered .unlisted}
+
+-   You can have the sections listed here, for instance:
+
+    -   [Lorem ipsum](#lorem-ipsum)
+    -   [Takeaways](#takeaways)
+:::
+
+ 
+
+# Analysis flowchart {.unnumbered .unlisted}
+
+```{mermaid, fig.align = "center"}
+flowchart
+  A[Read data] --> B(Format data) 
+  B --> C(Graphs)
+  C --> D(Statistical analysis)
+  D --> E(Model summary) 
+
+style A fill:#44015466
+style B fill:#3E4A894D
+style C fill:#26828E4D
+style D fill:#6DCD594D
+
+```
+
+# Load packages {.unnumbered .unlisted}
+
+```{r load packages}
+
+# knitr is require for creating html/pdf/word reports
+# formatR is used for soft-wrapping code
+
+# install/ load packages
+sketchy::load_packages(packages = c("knitr", "formatR"))
+
+```
+
+```{r}
+
+
+a <- 1
+
+b <- 2
+```
+
+# Example code
+Here's an example code using the lme4 package to fit a Generalized Linear Mixed Model (GLMM) regression on the iris dataset, followed by a plot of the results using ggplot2:
+```{r}
+
+
+# Load required libraries
+library(lme4)
+library(ggplot2)
+
+# Load the iris dataset
+data(iris)
+
+# Fit a GLMM regression using the lme4 package
+glmm_model <- glmer(Sepal.Length ~ Sepal.Width + Petal.Length + (1 | Species),
+                    data = iris,
+                    family = gaussian)
+
+# Extract fixed effects from the model
+fixed_effects <- fixef(glmm_model)
+
+# Create a dataframe with fixed effects coefficients
+coefficients_df <- data.frame(variable = names(fixed_effects),
+                               coefficient = fixed_effects)
+
+# Plot the coefficients
+coefficients_plot <- ggplot(coefficients_df, aes(x = variable, y = coefficient)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  labs(title = "Fixed Effects Coefficients",
+       x = "Variable",
+       y = "Coefficient") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Show the plot
+print(coefficients_plot)
+```
+
+This code first loads the required libraries, then loads the iris dataset. It fits a GLMM regression model where Sepal.Length is predicted by Sepal.Width and Petal.Length, with a random intercept for Species. After fitting the model, it extracts the fixed effects coefficients and creates a dataframe with them. Finally, it creates a bar plot using ggplot2 to visualize the coefficients.
+<!-- '&nbsp;' adds blank space -->
+
+<!-- light green box -->
+
+::: {.alert .alert-success}
+# Takeaways {#takeaways .unnumbered .unlisted}
+
+Rmarkdown is useful
+
+:::
+
+ 
+
+<!-- '---' adds a gray vertical line -->
+
+------------------------------------------------------------------------
+
+ 
+
+<!-- add packages used, system details and versions  -->
+
+# Session information {.unnumbered .unlisted}
+
+```{r session info, echo=F}
+
+sessionInfo()
+
+```
