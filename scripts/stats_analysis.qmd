@@ -55,9 +55,8 @@ if (file.exists("./.git/config")){
 
 # options to customize chunk outputs
 knitr::opts_chunk$set(
-  # class.source = "numberLines lineAnchors", # for code line numbers
-  # tidy.opts = list(width.cutoff = 65), 
-  # tidy = TRUE,
+  tidy.opts = list(width.cutoff = 65),
+  tidy = TRUE,
   message = FALSE
  )
 
@@ -158,6 +157,7 @@ ggplot(results[results$Predictor != "(Intercept)", ], aes(x = Predictor, y = Coe
 ```
 
 This code fits a linear mixed-effects model to the `iris` dataset, where `Sepal.Length` is the dependent variable and `Sepal.Width`, `Petal.Length`, and `Petal.Width` are the independent variables. The model accounts for the grouping effect of `Species` using random intercepts. Then, it extracts the coefficients and standard errors, calculates the 95% confidence intervals, and creates a plot using `ggplot2` to visualize the results with point estimates and error bars representing the confidence intervals.
+
 <!-- '&nbsp;' adds blank space -->
 
 <!-- light green box -->
