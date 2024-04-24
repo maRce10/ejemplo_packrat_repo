@@ -11,9 +11,12 @@ highlight-style: pygments
 format:
   html:
     df-print: kable
+    code-line-numbers: true    
     code-fold: show
     code-tools: true
     css: qmd.css
+editor_options: 
+  chunk_output_type: console
 ---
 
 <!-- this code add line numbers to code blocks -->
@@ -28,6 +31,7 @@ pre.numberSource code
   { counter-reset: none; }
 </style>
 ```
+
 ```{r set root directory, echo = FALSE}
 
 # set working directory 
@@ -51,9 +55,9 @@ if (file.exists("./.git/config")){
 
 # options to customize chunk outputs
 knitr::opts_chunk$set(
-  class.source = "numberLines lineAnchors", # for code line numbers
-  tidy.opts = list(width.cutoff = 65), 
-  tidy = TRUE,
+  # class.source = "numberLines lineAnchors", # for code line numbers
+  # tidy.opts = list(width.cutoff = 65), 
+  # tidy = TRUE,
   message = FALSE
  )
 
@@ -64,9 +68,8 @@ knitr::opts_chunk$set(
 ::: {.alert .alert-info}
 # Purpose {.unnumbered .unlisted}
 
--   The first goal of this report
+-   Showcase the use of packrat
 
--   The second goal of this report
 :::
 
  
@@ -76,9 +79,7 @@ knitr::opts_chunk$set(
 ::: {.alert .alert-warning}
 # Report overview {.unnumbered .unlisted}
 
--   You can have the sections listed here, for instance:
-
-    -   [Lorem ipsum](#lorem-ipsum)
+    -   [Example code](#example-code)
     -   [Takeaways](#takeaways)
 :::
 
@@ -88,15 +89,15 @@ knitr::opts_chunk$set(
 
 ```{mermaid, fig.align = "center"}
 flowchart
-  A[Read data] --> B(Format data) 
-  B --> C(Graphs)
-  C --> D(Statistical analysis)
+  A[Read data] --> D(Statistical analysis)
   D --> E(Model summary) 
+  D --> C(Graphs)
+  
 
 style A fill:#44015466
-style B fill:#3E4A894D
 style C fill:#26828E4D
 style D fill:#6DCD594D
+style E fill:#3E4A894D
 
 ```
 
@@ -108,55 +109,55 @@ style D fill:#6DCD594D
 # formatR is used for soft-wrapping code
 
 # install/ load packages
-sketchy::load_packages(packages = c("knitr", "formatR"))
+sketchy::load_packages(packages = c("knitr", "formatR", "lme4", "ggplot2"))
 
 ```
 
-```{r}
-
-
-a <- 1
-
-b <- 2
-```
 
 # Example code
-Here's an example code using the lme4 package to fit a Generalized Linear Mixed Model (GLMM) regression on the iris dataset, followed by a plot of the results using ggplot2:
+
+Here's an example code using the `lme4` package to perform a linear regression on the `iris` dataset, followed by plotting the results using `ggplot2` with `geom_point` for mean effect sizes and `geom_errorbar` for the 95% confidence intervals:
+
+## Run statistical model
+
 ```{r}
+# Fit linear regression model using lme4 package
+model <- lmer(Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width + (1|Species), data = iris)
 
+# Extract coefficients and standard errors
+coefficients <- fixef(model)
+se <- sqrt(diag(vcov(model)))
 
-# Load required libraries
-library(lme4)
-library(ggplot2)
+# Calculate 95% confidence intervals
+lower_ci <- coefficients - 1.96 * se
+upper_ci <- coefficients + 1.96 * se
 
-# Load the iris dataset
-data(iris)
-
-# Fit a GLMM regression using the lme4 package
-glmm_model <- lmer(Sepal.Length ~ Sepal.Width + Petal.Length + (1 | Species),
-                    data = iris)
-
-# Extract fixed effects from the model
-fixed_effects <- fixef(glmm_model)
-
-# Create a dataframe with fixed effects coefficients
-coefficients_df <- data.frame(variable = names(fixed_effects),
-                               coefficient = fixed_effects)
-
-# Plot the coefficients
-coefficients_plot <- ggplot(coefficients_df, aes(x = variable, y = coefficient)) +
-  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
-  labs(title = "Fixed Effects Coefficients",
-       x = "Variable",
-       y = "Coefficient") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-# Show the plot
-print(coefficients_plot)
+# Create a data frame for plotting
+results <- data.frame(
+  Predictor = names(coefficients),
+  Coefficient = coefficients,
+  Lower_CI = lower_ci,
+  Upper_CI = upper_ci
+)
 ```
 
-This code first loads the required libraries, then loads the iris dataset. It fits a GLMM regression model where Sepal.Length is predicted by Sepal.Width and Petal.Length, with a random intercept for Species. After fitting the model, it extracts the fixed effects coefficients and creates a dataframe with them. Finally, it creates a bar plot using ggplot2 to visualize the coefficients.
+## Plotting results
+```{r}
+# Plot results using ggplot2
+ggplot(results[results$Predictor != "(Intercept)", ], aes(x = Predictor, y = Coefficient)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = Lower_CI, ymax = Upper_CI), width = 0.2) +
+  labs(title = "Linear Regression Coefficients with 95% Confidence Intervals",
+       x = "Predictor",
+       y = "Coefficient") + 
+  coord_flip() +
+  theme_classic() +
+  geom_hline(yintercept = 0, lty = 2)
+
+
+```
+
+This code fits a linear mixed-effects model to the `iris` dataset, where `Sepal.Length` is the dependent variable and `Sepal.Width`, `Petal.Length`, and `Petal.Width` are the independent variables. The model accounts for the grouping effect of `Species` using random intercepts. Then, it extracts the coefficients and standard errors, calculates the 95% confidence intervals, and creates a plot using `ggplot2` to visualize the results with point estimates and error bars representing the confidence intervals.
 <!-- '&nbsp;' adds blank space -->
 
 <!-- light green box -->
@@ -164,7 +165,7 @@ This code first loads the required libraries, then loads the iris dataset. It fi
 ::: {.alert .alert-success}
 # Takeaways {#takeaways .unnumbered .unlisted}
 
-Rmarkdown is useful
+Rmarkdown/quarto is useful!
 
 :::
 
